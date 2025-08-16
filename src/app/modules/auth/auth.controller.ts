@@ -8,6 +8,8 @@ import AppError from '../../errorHandlers/AppError';
 import { createUserToken } from '../../utils/Jwt/user.token';
 import { setAuthCookie } from '../../utils/Jwt/setCookie';
 import passport from 'passport';
+import { AuthService } from './auth.service';
+import { JwtPayload } from 'jsonwebtoken';
 
 
 const credentialsLogin = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -67,8 +69,26 @@ const logout = catchAsync(async (req: Request, res: Response, next: NextFunction
 
 })
 
+
+const changePassword = catchAsync(async (req: Request, res: Response, next: NextFunction)=>{
+
+    const newPassword = req.body.newPassword;
+    const oldPassword = req.body.oldPassword;
+    const decodedToken = req.user;
+
+    await AuthService.changePassword(oldPassword,newPassword, decodedToken as JwtPayload)
+
+    sendResponse(res,{
+        success: true,
+        statusCode: httpStatus.OK,
+        message: 'Password changed successfully',
+        data : null
+    })
+})
+
 export const AuthControllers = {
     credentialsLogin,
     logout,
-    
+    changePassword,
+
 }
