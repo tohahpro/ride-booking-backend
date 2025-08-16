@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 
 
-export interface RideRequest {
+export interface IRide {
     pickupLocation: string;
     destinationLocation: string;
     requestedAt: Date;
@@ -18,7 +18,7 @@ export interface RideRequest {
 
 
 export interface RideHistory {
-    rides: RideRequest[];
+    rides: IRide[];
 }
 
 

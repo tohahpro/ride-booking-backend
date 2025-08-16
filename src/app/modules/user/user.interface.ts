@@ -43,7 +43,7 @@ export interface IUser {
 
 
 export interface IDriver {
-    userId: Types.ObjectId[];
+    userId: Types.ObjectId;
     vehicleType: vehicle;
     vehicleNumber: string;
     licenseNumber: string;

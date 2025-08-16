@@ -16,7 +16,19 @@ const createUser = catchAsync(async (req: Request, res: Response, next: NextFunc
     })
 })
 
+const createDriver = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const driver = await UserService.createDriver(req.body);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.CREATED,
+        message: "Driver created successfully",
+        data: driver,
+    });
+});
+
 export const UserController ={
     createUser,
+    createDriver,
     
 }
