@@ -1,0 +1,49 @@
+import { Types } from "mongoose";
+
+export enum UserRole {
+    SUPER_ADMIN = 'super-admin',
+    ADMIN = 'admin',
+    RIDER = 'rider',
+    DRIVER = 'driver'
+}
+
+
+export interface IAuthProvider {
+    provider: 'google' | 'credentials';
+    providerId?: string;
+}
+
+
+export enum IsActive {
+    ACTIVE = "ACTIVE",
+    INACTIVE = "INACTIVE",
+    BLOCKED = "BLOCKED"
+}
+
+
+export enum vehicle {
+    CAR = "CAR",
+    BIKE = "BIKE",
+    CNG = "CNG"
+}
+
+export interface IUser {
+    name: string;
+    email: string;
+    password?: string;
+    phone ?: string;
+    isActive?: IsActive;
+    isVerified?: string;
+    rating?: number;
+    role?: UserRole;
+    auths: IAuthProvider[];
+    booking?: Types.ObjectId[];
+}
+
+
+export interface IDriver {
+    userId: Types.ObjectId[];
+    vehicleType: vehicle;
+    vehicleNumber: string;
+    licenseNumber: string;
+}
