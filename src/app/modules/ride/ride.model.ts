@@ -11,7 +11,7 @@ const rideSchema = new Schema<IRide>(
     requestedAt: { type: Date, default: Date.now },
     status: {
       type: String,
-      enum: ["requested", "cancelled", "accepted", "in_transit", "completed"],
+      enum: ["requested", "cancelled", "accepted", "picked_up", "in_transit", "completed"],
       default: "requested",
     },
     riderId: { type: Schema.Types.ObjectId, ref: "User", required: true },    

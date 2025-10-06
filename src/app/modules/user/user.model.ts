@@ -1,5 +1,5 @@
 import { model, Schema } from "mongoose";
-import { IAuthProvider, IDriver, IsActive, IUser, UserRole, vehicle } from "./user.interface";
+import { IAuthProvider, IsActive, IUser, UserRole } from "./user.interface";
 
 const authProviderSchema = new Schema<IAuthProvider>({
     provider: {type: String, required: true},
@@ -37,23 +37,3 @@ const userSchema = new Schema<IUser>({
 
 
 export const User = model<IUser>('User', userSchema)
-
-const driverSchema = new Schema<IDriver>({
-    userId: {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-        required: true
-    },
-    vehicleType: {
-        type: String,
-        enum: Object.values(vehicle),
-        default: vehicle.BIKE,
-        required: true
-    },
-    vehicleNumber: {
-        type: String,
-        required: true
-    }
-})
-
-export const Driver = model<IDriver>("Driver", driverSchema)

@@ -21,12 +21,6 @@ export enum IsActive {
 }
 
 
-export enum vehicle {
-    CAR = "CAR",
-    BIKE = "BIKE",
-    CNG = "CNG"
-}
-
 export interface IUser {
     _id: string;
     name: string;
@@ -41,10 +35,3 @@ export interface IUser {
     booking?: Types.ObjectId[];
 }
 
-
-export interface IDriver {
-    userId: Types.ObjectId;
-    vehicleType: vehicle;
-    vehicleNumber: string;
-    licenseNumber: string;
-}

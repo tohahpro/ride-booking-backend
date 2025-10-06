@@ -1,26 +1,41 @@
 import { Types } from "mongoose";
 
-export interface DriverRideAction {
+export type RideStatus = 'requested' | 'accepted' | 'picked_up' | 'in_transit' | 'completed' | 'cancelled';
+export type DriverAction = 'accept' | 'reject';
+
+export interface IDriverActivity {
+  driverId: Types.ObjectId;
+  rideId?: Types.ObjectId;
+  action?: DriverAction;
+  status?: RideStatus;
+  totalEarnings: number;
+  completedRides: number;
+  rides: {
     rideId: Types.ObjectId;
-    driverId: Types.ObjectId;
-    action: 'accept' | 'reject';
-    status?: 'picked_up' | 'in_transit' | 'completed';
+    status?: RideStatus;
+    statusHistory?: {
+      status: RideStatus;
+      at: Date;
+    }[];
+    amount?: number;
+    commission?: number;
+    netEarning?: number;
+    completedAt?: Date;
+    _alreadyCounted?: boolean;
+  }[];
 }
 
 
-export interface DriverEarningsHistory {
-    driverId: Types.ObjectId;
-    totalEarnings: number;
-    completedRides: number;
-        earningsByRide: {
-            rideId: Types.ObjectId[];
-            amount: number;
-            completedAt: Date;
-        }[];
+export enum vehicle {
+    CAR = "CAR",
+    BIKE = "BIKE",
+    CNG = "CNG"
 }
 
-
-export interface DriverAvailability {
-    driverId: Types.ObjectId;
+export interface IDriver {
+    userId: Types.ObjectId;
+    vehicleType: vehicle;
+    vehicleNumber: string;
+    licenseNumber: string;
     isOnline: boolean;
 }

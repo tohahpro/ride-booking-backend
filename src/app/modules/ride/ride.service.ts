@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from 'http-status-codes';
 import AppError from "../../errorHandlers/AppError";
 import { IRide } from "./ride.interface";
@@ -31,7 +32,47 @@ const generateRandomFare = (min: number, max: number): number => {
 };
 
 
+const getAllRequestRides = async (query: Record<string, any>) => {
+  const rides = await Ride.find(query)  
+    .sort({ requestedAt: -1 });
+
+  return rides;
+};
+
+
+const cancelRideRequest = async (id: string, payload : Partial<IRide>) => {
+
+  const existingRide = await Ride.findOne({ _id: id });
+
+  if (!existingRide) {
+    throw new AppError(httpStatus.NOT_FOUND, "Ride request not found");
+  }
+
+  const rider = payload.riderId;
+  if (!rider) {
+    throw new AppError(httpStatus.NOT_FOUND, "Rider not found");
+  }
+
+  if (existingRide.riderId.toString() !== rider.toString()) {
+    throw new AppError(httpStatus.FORBIDDEN, "You are not allowed to cancel this ride");
+  }
+
+  if (existingRide.status !== "requested") {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Cannot cancel, driver already accepted or ride is in progress"
+    );
+  }
+
+  const updatedRide = await Ride.findByIdAndUpdate(id, payload , { new: true });
+  return updatedRide;
+};
+
+
+
 export const rideService ={
    createRequestRide,
+   getAllRequestRides,
+   cancelRideRequest
 
 }
