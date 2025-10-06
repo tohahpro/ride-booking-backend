@@ -15,7 +15,18 @@ const getAllUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getAllRide = catchAsync(async (req: Request, res: Response) => {
+  const result = await adminServices.getAllRide();
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    data: result,
+    message: "All ride retrieved successful",
+  });
+});
+
 export const adminController = {
     getAllUser,
-    
+    getAllRide,
+
 }
