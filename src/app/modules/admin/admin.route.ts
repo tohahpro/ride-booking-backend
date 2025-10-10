@@ -1,13 +1,15 @@
 import { Router } from "express";
 import { adminController } from "./admin.controller";
+import { checkAuth } from "../../middlewares/checkAuth";
+import { UserRole } from "../user/user.interface";
 
 const router = Router();
 
-router.get("/getAllUser", adminController.getAllUser);
-router.get("/getAllRide", adminController.getAllRide);
-router.patch("/changeIsApproveStatus/:id",adminController.changeIsApproveStatus);
-router.patch("/updateActiveStatus/:id", adminController.updateActiveStatus);
-router.patch("/changeBlockStatus/:id",adminController.changeBlockStatus);
+router.get("/getAllUser", checkAuth(UserRole.ADMIN), adminController.getAllUser);
+router.get("/getAllRide", checkAuth(UserRole.ADMIN), adminController.getAllRide);
+router.patch("/changeIsApproveStatus/:id", checkAuth(UserRole.ADMIN), adminController.changeIsApproveStatus);
+router.patch("/updateActiveStatus/:id", checkAuth(UserRole.ADMIN), adminController.updateActiveStatus);
+router.patch("/changeBlockStatus/:id", checkAuth(UserRole.ADMIN), adminController.changeBlockStatus);
 
 
 
