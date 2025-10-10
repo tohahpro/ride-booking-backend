@@ -27,8 +27,30 @@ const getAllRide = async () => {
   return { data: rides, meta: totalCount };
 };
 
+const changeIsApproveStatus = async (userId: string) => {
+  if (!userId) {
+    throw new AppError(httpStatus.NOT_FOUND, "Id not found");
+  }
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "Not Found");
+  }
+  if (user.role !== UserRole.DRIVER) {
+    throw new AppError(httpStatus.NOT_FOUND, "This Action only for driver role");
+  }
+  const updatedUser = await User.findByIdAndUpdate(
+    userId,
+    { isApprove: !user?.isApprove },
+    { new: true, runValidators: true }
+  ).select("name email isApproved");
+
+  return updatedUser;
+};
+
+
 export const adminServices = {
     getAllUser,
     getAllRide,
+    changeIsApproveStatus,
 
 }

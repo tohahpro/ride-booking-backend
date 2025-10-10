@@ -25,8 +25,21 @@ const getAllRide = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const changeIsApproveStatus = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.params.id;
+  const result = await adminServices.changeIsApproveStatus(userId);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    data: result,
+    message: "Changed approved status",
+  });
+});
+
+
 export const adminController = {
     getAllUser,
     getAllRide,
-
+    changeIsApproveStatus,
+    
 }

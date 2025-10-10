@@ -28,7 +28,8 @@ export interface IUser {
     password?: string;
     phone ?: string;
     isActive?: IsActive;
-    isVerified?: string;
+    isVerified?: boolean;
+    isApprove: boolean;
     rating?: number;
     role?: UserRole;
     auths: IAuthProvider[];
