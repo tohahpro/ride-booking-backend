@@ -1,7 +1,7 @@
 import httpStatus from "http-status-codes";
 import { User } from "../user/user.model";
 import AppError from "../../errorHandlers/AppError";
-import { UserRole } from "../user/user.interface";
+import { IsActive, UserRole } from "../user/user.interface";
 import { Ride } from "../ride/ride.model";
 
 
@@ -47,10 +47,30 @@ const changeIsApproveStatus = async (userId: string) => {
   return updatedUser;
 };
 
+const updateActiveStatus = async (userId: string, isActive: IsActive) => {
+  if (!userId) {
+    throw new AppError(httpStatus.NOT_FOUND, "User id not found");
+  }
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not Found");
+  }
+  if (user.role == UserRole.ADMIN) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Can't block admin");
+  }
+  const updatedUser = await User.findByIdAndUpdate(
+    userId,
+    { isActive },
+    { new: true, runValidators: true }
+  ).select("name email role status");
+
+  return updatedUser;
+};
 
 export const adminServices = {
-    getAllUser,
-    getAllRide,
-    changeIsApproveStatus,
+  getAllUser,
+  getAllRide,
+  changeIsApproveStatus,
+  updateActiveStatus,
 
 }

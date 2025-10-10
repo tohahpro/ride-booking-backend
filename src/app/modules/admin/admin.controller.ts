@@ -36,10 +36,22 @@ const changeIsApproveStatus = catchAsync(async (req: Request, res: Response) => 
   });
 });
 
+const updateActiveStatus = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { isActive } = req.body
+
+  const result = await adminServices.updateActiveStatus(id, isActive);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    data: result,
+    message: "Status updated successfully",
+  });
+});
 
 export const adminController = {
-    getAllUser,
-    getAllRide,
-    changeIsApproveStatus,
-    
+  getAllUser,
+  getAllRide,
+  changeIsApproveStatus,
+  updateActiveStatus
 }

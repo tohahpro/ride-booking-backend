@@ -6,6 +6,6 @@ const router = Router();
 router.get("/getAllUser", adminController.getAllUser);
 router.get("/getAllRide", adminController.getAllRide);
 router.patch("/changeIsApproveStatus/:id",adminController.changeIsApproveStatus);
-
+router.patch("/updateActiveStatus/:id", adminController.updateActiveStatus);
 
 export const AdminRoutes = router;
