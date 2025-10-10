@@ -55,8 +55,8 @@ const updateActiveStatus = async (userId: string, isActive: IsActive) => {
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, "User not Found");
   }
-  if (user.role == UserRole.ADMIN) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Can't block admin");
+  if (user.role === UserRole.ADMIN && isActive === IsActive.INACTIVE) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Admin user cannot be blocked");
   }
   const updatedUser = await User.findByIdAndUpdate(
     userId,
@@ -67,10 +67,32 @@ const updateActiveStatus = async (userId: string, isActive: IsActive) => {
   return updatedUser;
 };
 
+const changeBlockStatus = async (userId: string) => {
+  if (!userId) {
+    throw new AppError(httpStatus.NOT_FOUND, "User id not found");
+  }
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not Found");
+  }
+  if (user.role == UserRole.ADMIN) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Can't block admin");
+  }
+  const updatedUser = await User.findByIdAndUpdate(
+    userId,
+    { isBlocked: !user?.isBlocked },
+    { new: true, runValidators: true }
+  ).select("name email isBlocked");
+
+  return updatedUser;
+};
+
+
 export const adminServices = {
   getAllUser,
   getAllRide,
   changeIsApproveStatus,
   updateActiveStatus,
-
+  changeBlockStatus,
+  
 }

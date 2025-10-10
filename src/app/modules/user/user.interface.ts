@@ -16,10 +16,10 @@ export interface IAuthProvider {
 
 export enum IsActive {
     ACTIVE = "ACTIVE",
-    INACTIVE = "INACTIVE",
-    BLOCKED = "BLOCKED"
+    INACTIVE = "INACTIVE"
 }
 
+export type UserStatus = "UNBLOCKED" | "BLOCKED";
 
 export interface IUser {
     _id: string;
@@ -28,6 +28,7 @@ export interface IUser {
     password?: string;
     phone ?: string;
     isActive?: IsActive;
+    isBlocked: boolean;
     isVerified?: boolean;
     isApprove: boolean;
     rating?: number;

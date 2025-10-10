@@ -49,9 +49,22 @@ const updateActiveStatus = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const changeBlockStatus = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.params.id;
+  const result = await adminServices.changeBlockStatus(userId);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    data: result,
+    message: "Changed block status",
+  });
+});
+
+
 export const adminController = {
   getAllUser,
   getAllRide,
   changeIsApproveStatus,
-  updateActiveStatus
+  updateActiveStatus,
+  changeBlockStatus
 }
