@@ -70,9 +70,21 @@ const getDriverHistory = catchAsync(async (req: Request, res: Response) => {
   }
 );
 
+const changeOnlineStatus = catchAsync(async (req: Request, res: Response) => {
+  const driverId = req.params.id;
+  const result = await driverService.changeOnlineStatus(driverId);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    message: "Changed Online status",
+    data: result,
+  });
+});
+
 export const driverController ={
     createDriver,
     updateRideStatus,
     driverAction,
-    getDriverHistory
+    getDriverHistory,
+    changeOnlineStatus
 }

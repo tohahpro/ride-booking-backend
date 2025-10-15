@@ -170,9 +170,25 @@ const driverHistory = async (driverId: string) => {
     };
 };
 
+
+const changeOnlineStatus = async (driverId: string) => {
+
+  const driver = await Driver.findById(driverId);  
+  if (!driver) {
+    throw new AppError(httpStatus.NOT_FOUND, "Driver not Found");
+  }
+  const updatedDriver = await Driver.findByIdAndUpdate(
+    driverId,
+    { isOnline: !driver?.isOnline },
+    { new: true, runValidators: true }
+  )
+  return updatedDriver;
+};
+
 export const driverService = {
     createDriver,
     driverAction,
     updateRideStatus,
-    driverHistory
+    driverHistory,
+    changeOnlineStatus
 }
