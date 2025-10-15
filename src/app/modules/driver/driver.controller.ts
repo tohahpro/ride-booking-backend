@@ -57,8 +57,22 @@ const driverAction = catchAsync(async (req: Request, res: Response, next: NextFu
       });
 });
 
+const getDriverHistory = catchAsync(async (req: Request, res: Response) => {
+    const driverId = req.params.id
+    const result = await driverService.driverHistory(driverId);
+    
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.CREATED,
+      data: result,
+      message: "Driver history retrieved successful",
+    });
+  }
+);
+
 export const driverController ={
     createDriver,
     updateRideStatus,
     driverAction,
+    getDriverHistory
 }

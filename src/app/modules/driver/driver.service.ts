@@ -1,3 +1,4 @@
+import  httpStatus  from 'http-status-codes';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Types } from "mongoose";
 import { UserRole } from "../user/user.interface";
@@ -38,11 +39,11 @@ const driverAction = async (id: string, payload: IDriverActivity) => {
     if (!payloadDriverId) throw new Error('DriverId is required');
 
     const driver = await Driver.findById(payloadDriverId);
-    if (!driver) throw new AppError(401,'Driver not found');
-    if (!driver.isOnline) throw new AppError(401,'Driver is offline');
+    if (!driver) throw new AppError(401, 'Driver not found');
+    if (!driver.isOnline) throw new AppError(401, 'Driver is offline');
 
     const ride = await Ride.findById(rideId);
-    if (!ride) throw new AppError(401,'Ride not found');
+    if (!ride) throw new AppError(401, 'Ride not found');
 
     let activity = await DriverActivityModel.findOne({ driverId: driver._id });
     if (!activity) {
@@ -87,7 +88,7 @@ const driverAction = async (id: string, payload: IDriverActivity) => {
         await activity.save();
         return { message: 'Ride rejected', rideId: ride._id, driverId: driver._id, activity };
     }
-    throw new AppError(400,'Invalid action. Must be either accept or reject');
+    throw new AppError(400, 'Invalid action. Must be either accept or reject');
 };
 
 const updateRideStatus = async (id: string, payload: IDriverActivity) => {
@@ -95,15 +96,15 @@ const updateRideStatus = async (id: string, payload: IDriverActivity) => {
     const driverId = (payload.driverId as unknown) as Types.ObjectId | string | undefined;
     const status = payload.status as any;
 
-    if (!driverId) throw new AppError(400,'DriverId is required');
-    if (!status) throw new AppError(400,'Status is required');
+    if (!driverId) throw new AppError(400, 'DriverId is required');
+    if (!status) throw new AppError(400, 'Status is required');
 
     const driver = await Driver.findById(driverId);
-    if (!driver) throw new AppError(404,'Driver not found');
-    if (!driver.isOnline) throw new AppError(403,'Driver is offline');
+    if (!driver) throw new AppError(404, 'Driver not found');
+    if (!driver.isOnline) throw new AppError(403, 'Driver is offline');
 
     const ride = await Ride.findById(rideId);
-    if (!ride) throw new AppError(404,'Ride not found');
+    if (!ride) throw new AppError(404, 'Ride not found');
 
     ride.status = status;
     if (!ride.timestamps) (ride as any).timestamps = {};
@@ -113,10 +114,10 @@ const updateRideStatus = async (id: string, payload: IDriverActivity) => {
     await ride.save();
 
     const activity = await DriverActivityModel.findOne({ driverId: driver._id });
-    if (!activity) throw new AppError(404,'Driver activity not found');
+    if (!activity) throw new AppError(404, 'Driver activity not found');
 
     const rideActivity: any = activity.rides.find(r => r.rideId?.toString() === rideId);
-    if (!rideActivity) throw new AppError(404,'Ride activity not found for this ride');
+    if (!rideActivity) throw new AppError(404, 'Ride activity not found for this ride');
 
     if (status === 'completed') {
         const amount = (rideActivity.amount ?? (ride as any).fare) || 0;
@@ -144,8 +145,40 @@ const updateRideStatus = async (id: string, payload: IDriverActivity) => {
     };
 };
 
+const driverHistory = async (driverId: string) => {
+  const history = await DriverActivityModel.findOne({ driverId })
+    .populate({
+      path: "rides.rideId", 
+      select: "riderId",
+      populate: {
+        path: "riderId",
+        select: "name phone", 
+      },
+    })
+
+  if (!history) {
+    throw new AppError(httpStatus.NOT_FOUND, "Driver history not found");
+  }
+
+  const rides = history.rides.map((ride) => ({
+    riderName: ride.rideId?.riderId?.name || "Unknown",
+    riderPhone: ride.rideId?.riderId?.phone || "N/A",
+    statusHistory: ride.statusHistory?.map((history) => ({
+      status: history.status,
+      time: history.at,
+    })),
+  }));
+  
+  return {
+    totalEarnings: history.totalEarnings,
+    completedRides: history.completedRides,
+    rides,
+  };
+};
+
 export const driverService = {
     createDriver,
     driverAction,
-    updateRideStatus
+    updateRideStatus,
+    driverHistory
 }
