@@ -1,4 +1,4 @@
-import  httpStatus  from 'http-status-codes';
+import httpStatus from 'http-status-codes';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Types } from "mongoose";
 import { UserRole } from "../user/user.interface";
@@ -145,35 +145,29 @@ const updateRideStatus = async (id: string, payload: IDriverActivity) => {
     };
 };
 
+
+
 const driverHistory = async (driverId: string) => {
-  const history = await DriverActivityModel.findOne({ driverId })
-    .populate({
-      path: "rides.rideId", 
-      select: "riderId",
-      populate: {
-        path: "riderId",
-        select: "name phone", 
-      },
-    })
+    const history = await DriverActivityModel.aggregate([
+        { $match: { driverId: new Types.ObjectId(driverId) } },
+        {
+            $project: {
+                _id: 0,
+                totalEarnings: 1,
+                completedRides: 1
+            },
+        },
+    ]);
 
-  if (!history) {
-    throw new AppError(httpStatus.NOT_FOUND, "Driver history not found");
-  }
+    if (!history || history.length === 0) {
+        throw new AppError(httpStatus.NOT_FOUND, "Driver history not found");
+    }
+    const data = history[0];
 
-  const rides = history.rides.map((ride) => ({
-    riderName: ride.rideId?.riderId?.name || "Unknown",
-    riderPhone: ride.rideId?.riderId?.phone || "N/A",
-    statusHistory: ride.statusHistory?.map((history) => ({
-      status: history.status,
-      time: history.at,
-    })),
-  }));
-  
-  return {
-    totalEarnings: history.totalEarnings,
-    completedRides: history.completedRides,
-    rides,
-  };
+    return {
+        totalEarnings: data.totalEarnings,
+        completedRides: data.completedRides
+    };
 };
 
 export const driverService = {
