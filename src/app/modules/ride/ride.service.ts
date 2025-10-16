@@ -3,6 +3,7 @@ import httpStatus from 'http-status-codes';
 import AppError from "../../errorHandlers/AppError";
 import { IRide } from "./ride.interface";
 import { Ride } from "./ride.model";
+import { Types } from 'mongoose';
 
 
 const generateRandomFare = (min: number, max: number): number => {
@@ -69,10 +70,31 @@ const cancelRideRequest = async (id: string, payload : Partial<IRide>) => {
 };
 
 
+export const riderHistory = async (riderId: string) => {
+  if (!Types.ObjectId.isValid(riderId)) {
+    throw new Error("Rider is not exists");
+  }
+  const history = await Ride.aggregate([
+    { $match: { riderId: new Types.ObjectId(riderId) } },
+    {
+      $project: {
+        pickupLocation: 1,
+        destinationLocation: 1,
+        fare: 1,
+        status: 1,
+        history: 1,
+      },
+    },
+    { $sort: { requestedAt: -1 } },
+  ]);
+
+  return history;
+};
 
 export const rideService ={
    createRequestRide,
    getAllRequestRides,
-   cancelRideRequest
+   cancelRideRequest,
+   riderHistory
 
 }
