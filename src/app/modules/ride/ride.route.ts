@@ -7,7 +7,7 @@ import { RideController } from "./ride.controller";
 
 const router = Router();
 
-router.post('/request-ride', RideController.createRideRequest)
+router.post('/request-ride/:id', RideController.createRideRequest)
 router.get('/request-ride', RideController.getAllRideRequests)
 router.get('/history/:id', RideController.getRiderHistory)
 router.patch('/request-ride/:id', RideController.cancelRideRequest)

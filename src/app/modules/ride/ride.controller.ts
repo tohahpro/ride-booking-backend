@@ -8,13 +8,14 @@ import { sendResponse } from "../../utils/sendResponse";
 
 const createRideRequest = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const ride = await rideService.createRequestRide(req.body);
+    const riderId = req.params.id;
+    const result = await rideService.createRequestRide(riderId, req.body);
 
     sendResponse(res, {
       success: true,
       statusCode: httpStatus.CREATED,
       message: "Ride requested successfully",
-      data: ride,
+      data: result,
     });
   }
 );

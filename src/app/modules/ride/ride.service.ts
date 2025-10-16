@@ -10,8 +10,8 @@ const generateRandomFare = (min: number, max: number): number => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
- const createRequestRide = async (payload: Partial<IRide>) => {
-  if (!payload.riderId) {
+ const createRequestRide = async (riderId: string, payload: Partial<IRide>) => {
+  if (!riderId) {
     throw new AppError(httpStatus.BAD_REQUEST, "RiderId is required to request a ride");
   }
   if (!payload.pickupLocation) {
@@ -24,6 +24,7 @@ const generateRandomFare = (min: number, max: number): number => {
   const randomFare = generateRandomFare(50, 1500);
 
   const ride = await Ride.create({ 
+    riderId,
     ...payload, 
     fare: randomFare,
     requestedAt: new Date()
