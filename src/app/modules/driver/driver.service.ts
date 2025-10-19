@@ -1,4 +1,4 @@
-import httpStatus from 'http-status-codes';
+import httpStatus, { StatusCodes } from 'http-status-codes';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Types } from "mongoose";
 import { UserRole } from "../user/user.interface";
@@ -44,6 +44,15 @@ const driverAction = async (id: string, payload: IDriverActivity) => {
 
     const ride = await Ride.findById(rideId);
     if (!ride) throw new AppError(401, 'Ride not found');
+
+    const activeRide = await Ride.findOne({
+        driverId: driver._id,
+        status: { $in: ["accept", "accepted"] },
+    });
+
+    if (activeRide && activeRide._id.toString() !== rideId) {
+        throw new AppError(StatusCodes.BAD_REQUEST, "Driver already has an accepted ride.");
+    }
 
     let activity = await DriverActivityModel.findOne({ driverId: driver._id });
     if (!activity) {
@@ -173,16 +182,16 @@ const driverHistory = async (driverId: string) => {
 
 const changeOnlineStatus = async (driverId: string) => {
 
-  const driver = await Driver.findById(driverId);  
-  if (!driver) {
-    throw new AppError(httpStatus.NOT_FOUND, "Driver not Found");
-  }
-  const updatedDriver = await Driver.findByIdAndUpdate(
-    driverId,
-    { isOnline: !driver?.isOnline },
-    { new: true, runValidators: true }
-  )
-  return updatedDriver;
+    const driver = await Driver.findById(driverId);
+    if (!driver) {
+        throw new AppError(httpStatus.NOT_FOUND, "Driver not Found");
+    }
+    const updatedDriver = await Driver.findByIdAndUpdate(
+        driverId,
+        { isOnline: !driver?.isOnline },
+        { new: true, runValidators: true }
+    )
+    return updatedDriver;
 };
 
 export const driverService = {
