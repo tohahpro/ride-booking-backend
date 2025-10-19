@@ -1,10 +1,38 @@
 import { model, Schema } from "mongoose";
 import { IRide } from "./ride.interface";
 
+
+export const geoJsonPointSchema = new Schema(
+  {
+    type: {
+      type: String,
+      enum: ["Point"],
+      default: "Point",
+    },
+    coordinates: {
+      type: [Number], // [lon, lat]
+      default: [0, 0],
+    },
+  },
+  { _id: false, versionKey: false }
+);
+
 const rideSchema = new Schema<IRide>(
   {
-    pickupLocation: { type: String, required: true },
-    destinationLocation: { type: String, required: true },
+    pickupLocation: {
+      location: geoJsonPointSchema,
+      address: {
+        type: String,
+        required: true,
+      },
+    },
+    destinationLocation: {
+      location: geoJsonPointSchema,
+      address: {
+        type: String,
+        required: true,
+      },
+    },
     requestedAt: { type: Date, default: Date.now },
     status: {
       type: String,

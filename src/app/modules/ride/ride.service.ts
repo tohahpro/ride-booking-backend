@@ -6,11 +6,7 @@ import { Ride } from "./ride.model";
 import { Types } from 'mongoose';
 
 
-const generateRandomFare = (min: number, max: number): number => {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-};
-
- const createRequestRide = async (riderId: string, payload: Partial<IRide>) => {
+const createRequestRide = async (riderId: string, payload: Partial<IRide>) => {
   if (!riderId) {
     throw new AppError(httpStatus.BAD_REQUEST, "RiderId is required to request a ride");
   }
@@ -21,28 +17,45 @@ const generateRandomFare = (min: number, max: number): number => {
     throw new AppError(httpStatus.BAD_REQUEST, "Destination locations are not exists.");
   }
 
-  const randomFare = generateRandomFare(50, 1500);
+  const [lon1, lat1] = payload.pickupLocation.location.coordinates;
+  const [lon2, lat2] = payload.destinationLocation.location.coordinates;
 
-  const ride = await Ride.create({ 
+  if (!lon1 || !lat1 || !lon2 || !lat2)
+    throw new AppError(httpStatus.BAD_REQUEST, "Coordinates সঠিক না");
+
+
+  const R = 6371;
+  const toRad = (v: number) => (v * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+  const distance = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  const fareCost = Math.round(distance * 8);
+
+
+  const ride = await Ride.create({
     riderId,
-    ...payload, 
-    fare: randomFare,
+    ...payload,
+    fare: fareCost,
     requestedAt: new Date()
-});
+  });
 
   return ride;
 };
 
 
 const getAllRequestRides = async (query: Record<string, any>) => {
-  const rides = await Ride.find(query)  
+  const rides = await Ride.find(query)
     .sort({ requestedAt: -1 });
 
   return rides;
 };
 
 
-const cancelRideRequest = async (id: string, payload : Partial<IRide>) => {
+const cancelRideRequest = async (id: string, payload: Partial<IRide>) => {
 
   const existingRide = await Ride.findOne({ _id: id });
 
@@ -66,7 +79,7 @@ const cancelRideRequest = async (id: string, payload : Partial<IRide>) => {
     );
   }
 
-  const updatedRide = await Ride.findByIdAndUpdate(id, payload , { new: true });
+  const updatedRide = await Ride.findByIdAndUpdate(id, payload, { new: true });
   return updatedRide;
 };
 
@@ -92,10 +105,10 @@ export const riderHistory = async (riderId: string) => {
   return history;
 };
 
-export const rideService ={
-   createRequestRide,
-   getAllRequestRides,
-   cancelRideRequest,
-   riderHistory
+export const rideService = {
+  createRequestRide,
+  getAllRequestRides,
+  cancelRideRequest,
+  riderHistory
 
 }

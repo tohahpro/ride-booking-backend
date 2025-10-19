@@ -1,9 +1,17 @@
 import { Types } from "mongoose";
 
+export interface IGeoJSONPoint extends Document {
+  type: "Point";
+  coordinates: [number, number];
+}
+export interface ILocation {
+  location: IGeoJSONPoint;
+  address: string;
+}
 
 export interface IRide {
-  pickupLocation: string;
-  destinationLocation: string;
+  pickupLocation: ILocation;
+  destinationLocation: ILocation;
   requestedAt: Date;
   status: 'requested' | 'cancelled' | 'accepted' | 'in_transit' | 'completed' | 'picked_up';
   riderId: Types.ObjectId;
@@ -14,7 +22,7 @@ export interface IRide {
     completedAt?: Date;
     cancelledAt?: Date;
   };
-  // history of this ride
+  
   history?: {
     status: IRide["status"];
     at: Date;
