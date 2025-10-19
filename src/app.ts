@@ -4,6 +4,8 @@ import cookieParser from 'cookie-parser';
 import passport from 'passport';
 import expressSession from 'express-session';
 import './app/config/passport'
+import { globalErrorHandler } from "./app/middlewares/globalErrorHandler";
+import { notFound } from "./app/middlewares/notFound";
 
 const app : Application = express()
 app.use(express.json())
@@ -23,5 +25,7 @@ app.get('/', (req : Request, res : Response) => {
   res.send('Welcome to the Ride Booking System')
 })
 
+app.use(globalErrorHandler);
+app.use(notFound);
 
 export default app;

@@ -8,6 +8,7 @@ import { handleCastError } from "../helpers/handleCastError";
 import { handleZodError } from "../helpers/handleZodError";
 import { handleValidationError } from "../helpers/validationError";
 import AppError from "../errorHandlers/AppError";
+import { envVars } from "../config/env";
 
 export const globalErrorHandler = async(err:any, req: Request, res:Response, next: NextFunction)=>{
     
@@ -30,6 +31,7 @@ export const globalErrorHandler = async(err:any, req: Request, res:Response, nex
         const simplifiedError = handleCastError(err)
         statusCode = simplifiedError.statusCode;
         message = simplifiedError.message
+        errorSources = simplifiedError.errorSources as TErrorSources[]
     }
     // Zod Error
     else if(err.name === "ZodError"){
@@ -49,13 +51,13 @@ export const globalErrorHandler = async(err:any, req: Request, res:Response, nex
         message = err.message
     }else if(err instanceof Error){
         statusCode = 500;
-        message = err.message
+        message = err.message    
     }
 
     res.status(statusCode).json({
         success: false,
         message: message,
-        // err: envVars.NODE_ENV === "development" ? err : null,
-        // stack: envVars.NODE_ENV === "development" ? err.stack : null
+        err: envVars.NODE_ENV === "development" ? err : null,
+        stack: envVars.NODE_ENV === "development" ? err.stack : null
     })
 }
