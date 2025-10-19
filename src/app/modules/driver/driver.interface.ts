@@ -20,6 +20,7 @@ export interface IDriverActivity {
     amount?: number;
     commission?: number;
     netEarning?: number;
+    feedback?: string;
     completedAt?: Date;
     _alreadyCounted?: boolean;
   }[];

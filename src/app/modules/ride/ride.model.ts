@@ -42,6 +42,7 @@ const rideSchema = new Schema<IRide>(
     riderId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     driverId: { type: Schema.Types.ObjectId, ref: "User" },
     fare: { type: Number },
+    feedback: {type: String},
     timestamps: {
       pickedUpAt: { type: Date },
       completedAt: { type: Date },

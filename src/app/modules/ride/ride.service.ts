@@ -4,6 +4,7 @@ import AppError from "../../errorHandlers/AppError";
 import { IRide } from "./ride.interface";
 import { Ride } from "./ride.model";
 import { Types } from 'mongoose';
+import { DriverActivityModel } from '../driver/driver.model';
 
 
 const createRequestRide = async (riderId: string, payload: Partial<IRide>) => {
@@ -69,7 +70,7 @@ const cancelRideRequest = async (id: string, payload: Partial<IRide>) => {
   }
 
   if (existingRide.riderId.toString() !== rider.toString()) {
-    throw new AppError(httpStatus.FORBIDDEN, "You are not allowed to cancel this ride");
+    throw new AppError(httpStatus.FORBIDDEN, "Driver already accepted. You are not allowed to cancel this ride");
   }
 
   if (existingRide.status !== "requested") {
@@ -83,6 +84,40 @@ const cancelRideRequest = async (id: string, payload: Partial<IRide>) => {
   return updatedRide;
 };
 
+const setDriverFeedback = async (id: string, payload: Partial<IRide>) => {
+  if (!id) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Ride id is required");
+  }
+  const { driverId, feedback } = payload
+
+  if (!driverId) {
+    throw new AppError(httpStatus.BAD_REQUEST, "DriverID is required");
+  }
+  if (!feedback) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Feedback is required");
+  }
+
+  const ride = await Ride.findById(id);
+  if (!ride) {
+    throw new AppError(httpStatus.NOT_FOUND, "Ride not found");
+  }
+
+  ride.feedback = payload.feedback;
+  if (ride.driverId) {
+    const updated = await DriverActivityModel.updateOne(
+      {
+        driverId: payload.driverId,
+        "rides.rideId": ride._id,
+      },
+      {
+        $set: { "rides.$.feedback": payload.feedback },
+      }
+    );
+    
+    return updated
+  }
+  return ride;
+}
 
 export const riderHistory = async (riderId: string) => {
   if (!Types.ObjectId.isValid(riderId)) {
@@ -109,6 +144,7 @@ export const rideService = {
   createRequestRide,
   getAllRequestRides,
   cancelRideRequest,
-  riderHistory
+  riderHistory,
+  setDriverFeedback
 
 }

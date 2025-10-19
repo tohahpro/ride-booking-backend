@@ -16,13 +16,14 @@ export interface IRide {
   status: 'requested' | 'cancelled' | 'accepted' | 'in_transit' | 'completed' | 'picked_up';
   riderId: Types.ObjectId;
   driverId?: Types.ObjectId;
-  fare?: number;
+  fare?: number;  
+  feedback?: string;
   timestamps?: {
     pickedUpAt?: Date;
     completedAt?: Date;
     cancelledAt?: Date;
   };
-  
+
   history?: {
     status: IRide["status"];
     at: Date;

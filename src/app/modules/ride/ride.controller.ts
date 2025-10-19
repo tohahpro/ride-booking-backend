@@ -50,23 +50,38 @@ const cancelRideRequest = catchAsync(
   }
 );
 
+const setDriverFeedback = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params; 
+    const result = await rideService.setDriverFeedback(id, req.body);
 
-const getRiderHistory = catchAsync(async (req: Request, res: Response) => {
-    const riderId = req.params.id
-    const result = await rideService.riderHistory(riderId);
-    
     sendResponse(res, {
       success: true,
-      statusCode: httpStatus.CREATED,
+      statusCode: httpStatus.OK,
+      message: "Driver feedback set successfully",
       data: result,
-      message: "Rider history retrieved successful",
     });
   }
+);
+
+
+const getRiderHistory = catchAsync(async (req: Request, res: Response) => {
+  const riderId = req.params.id
+  const result = await rideService.riderHistory(riderId);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    data: result,
+    message: "Rider history retrieved successful",
+  });
+}
 );
 
 export const RideController = {
   createRideRequest,
   getAllRideRequests,
   cancelRideRequest,
-  getRiderHistory
+  getRiderHistory,
+  setDriverFeedback
 };

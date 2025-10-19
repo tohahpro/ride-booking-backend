@@ -54,6 +54,7 @@ const rideSchema = new Schema(
         amount: { type: Number },
         commission: { type: Number },
         netEarning: { type: Number },
+        feedback: { type: String },
         completedAt: { type: Date },
         _alreadyCounted: { type: Boolean, default: false },
     },
