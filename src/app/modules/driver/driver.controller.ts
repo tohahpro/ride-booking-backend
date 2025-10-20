@@ -5,6 +5,7 @@ import { NextFunction, Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import { driverService } from './driver.service';
+import { JwtPayload } from 'jsonwebtoken';
 
 
 
@@ -21,14 +22,15 @@ const createDriver = catchAsync(async (req: Request, res: Response, next: NextFu
 
 
 const updateRideStatus = catchAsync(async (req: Request, res: Response, next: NextFunction) => {   
-        const { driverId, status } = req.body;
+        const { status } = req.body;
+        const decodedToken = req.user;
         const rideId = req.params?.id || req.body?.rideId;
-        if (!driverId || !rideId || !status) {
+        if (!decodedToken || !rideId || !status) {
             res.status(400).json({ message: "driverId, rideId and status are required" });
             return;
         }
 
-        const result = await driverService.updateRideStatus(rideId, { driverId, status } as any);
+        const result = await driverService.updateRideStatus(rideId, { status } as any, decodedToken as JwtPayload);
 
         res.status(200).json({
             success: true,
@@ -40,14 +42,16 @@ const updateRideStatus = catchAsync(async (req: Request, res: Response, next: Ne
 
 const driverAction = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const rideId = req.params?.id || req.body?.rideId;
-    const { driverId, action } = req.body || {};
+    const {action } = req.body || {};
+    const decodedToken = req.user;
 
-    if (!rideId || !driverId || !action) {
-        res.status(400).json({ message: "rideId, driverId and action are required" });
+
+    if (!rideId || !decodedToken || !action) {
+        res.status(400).json({ message: "rideId, driver and action are required" });
         return;
     }
 
-    const result = await driverService.driverAction(rideId, { driverId, action } as any);
+    const result = await driverService.driverAction(rideId, { action } as any, decodedToken as JwtPayload);
 
     sendResponse(res, {
         success: true,
@@ -58,8 +62,8 @@ const driverAction = catchAsync(async (req: Request, res: Response, next: NextFu
 });
 
 const getDriverHistory = catchAsync(async (req: Request, res: Response) => {
-    const driverId = req.params.id
-    const result = await driverService.driverHistory(driverId);
+    const decodedToken = req.user;
+    const result = await driverService.driverHistory(decodedToken as JwtPayload);
     
     sendResponse(res, {
       success: true,
@@ -71,8 +75,8 @@ const getDriverHistory = catchAsync(async (req: Request, res: Response) => {
 );
 
 const changeOnlineStatus = catchAsync(async (req: Request, res: Response) => {
-  const driverId = req.params.id;
-  const result = await driverService.changeOnlineStatus(driverId);
+  const decodedToken = req.user;
+  const result = await driverService.changeOnlineStatus(decodedToken as JwtPayload);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,

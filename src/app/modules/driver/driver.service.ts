@@ -7,6 +7,7 @@ import { Driver, DriverActivityModel } from "./driver.model";
 import { IDriver, IDriverActivity } from "./driver.interface";
 import { Ride } from "../ride/ride.model";
 import AppError from "../../errorHandlers/AppError";
+import { JwtPayload } from 'jsonwebtoken';
 
 
 const createDriver = async (payload: Partial<IDriver>) => {
@@ -32,13 +33,11 @@ const createDriver = async (payload: Partial<IDriver>) => {
     return driver;
 }
 
-const driverAction = async (id: string, payload: IDriverActivity) => {
+const driverAction = async (id: string, payload: IDriverActivity, decodedToken: JwtPayload) => {
     const rideId = id;
     const action = payload.action;
-    const payloadDriverId = payload.driverId;
-    if (!payloadDriverId) throw new Error('DriverId is required');
+    const driver = await Driver.findOne({ userId: decodedToken.userId });
 
-    const driver = await Driver.findById(payloadDriverId);
     if (!driver) throw new AppError(401, 'Driver not found');
     if (!driver.isOnline) throw new AppError(401, 'Driver is offline');
 
@@ -100,15 +99,14 @@ const driverAction = async (id: string, payload: IDriverActivity) => {
     throw new AppError(400, 'Invalid action. Must be either accept or reject');
 };
 
-const updateRideStatus = async (id: string, payload: IDriverActivity) => {
+const updateRideStatus = async (id: string, payload: IDriverActivity, decodedToken: JwtPayload) => {
     const rideId = id;
-    const driverId = (payload.driverId as unknown) as Types.ObjectId | string | undefined;
-    const status = payload.status as any;
 
-    if (!driverId) throw new AppError(400, 'DriverId is required');
+    const status = payload.status as any;
     if (!status) throw new AppError(400, 'Status is required');
 
-    const driver = await Driver.findById(driverId);
+    const driver = await Driver.findOne({ userId: decodedToken.userId });
+
     if (!driver) throw new AppError(404, 'Driver not found');
     if (!driver.isOnline) throw new AppError(403, 'Driver is offline');
 
@@ -156,9 +154,11 @@ const updateRideStatus = async (id: string, payload: IDriverActivity) => {
 
 
 
-const driverHistory = async (driverId: string) => {
+const driverHistory = async (decodedToken: JwtPayload) => {
+    const driver = await Driver.findOne({ userId: decodedToken.userId });
+    if (!driver) throw new AppError(401, 'Driver not found');
     const history = await DriverActivityModel.aggregate([
-        { $match: { driverId: new Types.ObjectId(driverId) } },
+        { $match: { driverId: new Types.ObjectId(driver._id) } },
         {
             $project: {
                 _id: 0,
@@ -180,14 +180,12 @@ const driverHistory = async (driverId: string) => {
 };
 
 
-const changeOnlineStatus = async (driverId: string) => {
+const changeOnlineStatus = async (decodedToken: JwtPayload) => {
 
-    const driver = await Driver.findById(driverId);
-    if (!driver) {
-        throw new AppError(httpStatus.NOT_FOUND, "Driver not Found");
-    }
+    const driver = await Driver.findOne({ userId: decodedToken.userId });
+    if (!driver) throw new AppError(401, 'Driver not found');
     const updatedDriver = await Driver.findByIdAndUpdate(
-        driverId,
+        driver,
         { isOnline: !driver?.isOnline },
         { new: true, runValidators: true }
     )

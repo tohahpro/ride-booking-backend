@@ -9,7 +9,7 @@ const router = Router();
 router.post('/create-driver',driverController.createDriver)
 router.post("/accept-ride/:id",checkAuth(UserRole.DRIVER), driverController.driverAction);
 router.patch("/status-update/:id",checkAuth(UserRole.DRIVER, UserRole.ADMIN), driverController.updateRideStatus);
-router.get("/history/:id",checkAuth(UserRole.DRIVER), driverController.getDriverHistory);
-router.patch("/online-status/:id",checkAuth(UserRole.DRIVER, UserRole.ADMIN), driverController.changeOnlineStatus)
+router.get("/history",checkAuth(UserRole.DRIVER), driverController.getDriverHistory);
+router.patch("/online-status",checkAuth(UserRole.DRIVER, UserRole.ADMIN), driverController.changeOnlineStatus)
 
 export const DriverRoutes = router;
