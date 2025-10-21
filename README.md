@@ -124,7 +124,7 @@ npm run dev
 | ------ | --------------------------------- | ---------------------------- | ------ |
 | POST   | `/ride/request-ride`              | Request a new ride           | Rider  |
 | GET    | `/ride/history`                   | Get rider’s ride history     | Rider  |
-| PATCH  | `/ride/:id/cancel-ride/:id`       | Cancel a ride                | Rider  |
+| PATCH  | `/ride/cancel-ride/:id`       | Cancel a ride                | Rider  |
 | GET    | `/ride/available-ride`            | Get available rides          | Driver |
 | PATCH  | `/ride/feedback/:id`              | Update ride status           | Rider |
 
