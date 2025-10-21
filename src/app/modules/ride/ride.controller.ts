@@ -4,12 +4,13 @@ import { NextFunction, Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
 import { rideService } from "./ride.service";
 import { sendResponse } from "../../utils/sendResponse";
+import { JwtPayload } from 'jsonwebtoken';
 
 
 const createRideRequest = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const riderId = req.params.id;
-    const result = await rideService.createRequestRide(riderId, req.body);
+    const decodedToken = req.user;
+    const result = await rideService.createRequestRide(decodedToken as JwtPayload, req.body);
 
     sendResponse(res, {
       success: true,
@@ -38,8 +39,9 @@ const cancelRideRequest = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const rideId = req.params.id;
     const payload = req.body;
+    const decodedToken = req.user;
 
-    const updatedRide = await rideService.cancelRideRequest(rideId, payload);
+    const updatedRide = await rideService.cancelRideRequest(rideId, payload, decodedToken as JwtPayload);
 
     sendResponse(res, {
       success: true,
@@ -53,7 +55,8 @@ const cancelRideRequest = catchAsync(
 const setDriverFeedback = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params; 
-    const result = await rideService.setDriverFeedback(id, req.body);
+    const decodedToken = req.user;
+    const result = await rideService.setDriverFeedback(id, req.body, decodedToken as JwtPayload);
 
     sendResponse(res, {
       success: true,
@@ -66,8 +69,8 @@ const setDriverFeedback = catchAsync(
 
 
 const getRiderHistory = catchAsync(async (req: Request, res: Response) => {
-  const riderId = req.params.id
-  const result = await rideService.riderHistory(riderId);
+  const decodedToken = req.user;
+  const result = await rideService.riderHistory(decodedToken as JwtPayload);
 
   sendResponse(res, {
     success: true,

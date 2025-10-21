@@ -5,9 +5,12 @@ import { IRide } from "./ride.interface";
 import { Ride } from "./ride.model";
 import { Types } from 'mongoose';
 import { DriverActivityModel } from '../driver/driver.model';
+import { JwtPayload } from 'jsonwebtoken';
 
 
-const createRequestRide = async (riderId: string, payload: Partial<IRide>) => {
+const createRequestRide = async (decodedToken: JwtPayload, payload: Partial<IRide>) => {
+  const riderId = decodedToken.userId;
+
   if (!riderId) {
     throw new AppError(httpStatus.BAD_REQUEST, "RiderId is required to request a ride");
   }
@@ -16,6 +19,16 @@ const createRequestRide = async (riderId: string, payload: Partial<IRide>) => {
   }
   if (!payload.destinationLocation) {
     throw new AppError(httpStatus.BAD_REQUEST, "Destination locations are not exists.");
+  }
+
+  const existingRide = await Ride.findOne({
+    riderId,
+    status: { $in: ["requested", "cancelled", "accepted", "in_transit", "picked_up"] },
+  });
+
+  if (existingRide) {
+    throw new AppError(httpStatus.BAD_REQUEST,
+      "You already have an active or pending ride request. Please complete or cancel it first.")
   }
 
   const [lon1, lat1] = payload.pickupLocation.location.coordinates;
@@ -56,7 +69,7 @@ const getAllRequestRides = async (query: Record<string, any>) => {
 };
 
 
-const cancelRideRequest = async (id: string, payload: Partial<IRide>) => {
+const cancelRideRequest = async (id: string, payload: Partial<IRide>, decodedToken: JwtPayload) => {
 
   const existingRide = await Ride.findOne({ _id: id });
 
@@ -64,10 +77,11 @@ const cancelRideRequest = async (id: string, payload: Partial<IRide>) => {
     throw new AppError(httpStatus.NOT_FOUND, "Ride request not found");
   }
 
-  const rider = payload.riderId;
+  const rider = await Ride.findOne({ riderId: decodedToken.userId });
   if (!rider) {
     throw new AppError(httpStatus.NOT_FOUND, "Rider not found");
   }
+  console.log(rider);
 
   if (existingRide.riderId.toString() !== rider.toString()) {
     throw new AppError(httpStatus.FORBIDDEN, "Driver already accepted. You are not allowed to cancel this ride");
@@ -84,47 +98,63 @@ const cancelRideRequest = async (id: string, payload: Partial<IRide>) => {
   return updatedRide;
 };
 
-const setDriverFeedback = async (id: string, payload: Partial<IRide>) => {
-  if (!id) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Ride id is required");
-  }
-  const { driverId, feedback } = payload
-
-  if (!driverId) {
-    throw new AppError(httpStatus.BAD_REQUEST, "DriverID is required");
-  }
-  if (!feedback) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Feedback is required");
-  }
-
+const setDriverFeedback = async (id: string, payload: Partial<IRide>, decodedToken: JwtPayload) => {
   const ride = await Ride.findById(id);
   if (!ride) {
     throw new AppError(httpStatus.NOT_FOUND, "Ride not found");
   }
 
-  ride.feedback = payload.feedback;
-  if (ride.driverId) {
-    const updated = await DriverActivityModel.updateOne(
-      {
-        driverId: payload.driverId,
-        "rides.rideId": ride._id,
-      },
-      {
-        $set: { "rides.$.feedback": payload.feedback },
-      }
-    );
-    
-    return updated
+  const existRider = await Ride.findOne({ riderId: decodedToken.userId });
+  if (!existRider) {
+    throw new AppError(httpStatus.NOT_FOUND, "Rider not found");
   }
+
+  console.log(decodedToken.userId);
+  console.log(ride.riderId.toString());
+
+  if (ride.riderId.toString() !== decodedToken.userId) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      "You are not authorized to give feedback for this ride"
+    );
+  }
+
+  const { feedback } = payload
+
+  const driver = ride.driverId
+
+  if (!driver) {
+    throw new AppError(httpStatus.NOT_FOUND, "Driver not found for this ride");
+  }
+
+  if (!feedback) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Feedback is required");
+  }
+
+  ride.feedback = feedback;
+  await ride.save();
+
+  await DriverActivityModel.updateOne(
+    {
+      driverId: driver._id,
+      "rides.rideId": ride._id,
+    },
+    {
+      $set: { "rides.$.feedback": feedback },
+    }
+  );
   return ride;
 }
 
-export const riderHistory = async (riderId: string) => {
-  if (!Types.ObjectId.isValid(riderId)) {
-    throw new Error("Rider is not exists");
+const riderHistory = async (decodedToken: JwtPayload) => {
+  const rider = await Ride.findOne({ riderId: decodedToken.userId });
+
+  if (!rider) {
+    throw new AppError(httpStatus.NOT_FOUND, "Rider not found");
   }
+
   const history = await Ride.aggregate([
-    { $match: { riderId: new Types.ObjectId(riderId) } },
+    { $match: { riderId: new Types.ObjectId(decodedToken.userId) } },
     {
       $project: {
         pickupLocation: 1,

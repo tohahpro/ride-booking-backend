@@ -5,9 +5,9 @@ import { UserRole } from "../user/user.interface";
 
 const router = Router();
 
-router.post('/request-ride/:id', checkAuth(UserRole.RIDER), RideController.createRideRequest)
+router.post('/request-ride', checkAuth(UserRole.RIDER), RideController.createRideRequest)
 router.get('/available-ride', checkAuth(UserRole.DRIVER, UserRole.ADMIN), RideController.getAllRideRequests)
-router.get('/history/:id', checkAuth(UserRole.RIDER), RideController.getRiderHistory)
+router.get('/history', checkAuth(UserRole.RIDER), RideController.getRiderHistory)
 router.patch('/cancel-ride/:id', checkAuth(UserRole.RIDER, UserRole.ADMIN), RideController.cancelRideRequest)
 router.patch('/feedback/:id', checkAuth(UserRole.RIDER), RideController.setDriverFeedback)
 
