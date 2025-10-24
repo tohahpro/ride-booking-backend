@@ -81,7 +81,6 @@ const cancelRideRequest = async (id: string, payload: Partial<IRide>, decodedTok
   if (!rider) {
     throw new AppError(httpStatus.NOT_FOUND, "Rider not found");
   }
-  console.log(rider);
 
   if (existingRide.riderId.toString() !== rider.toString()) {
     throw new AppError(httpStatus.FORBIDDEN, "Driver already accepted. You are not allowed to cancel this ride");
@@ -108,9 +107,6 @@ const setDriverFeedback = async (id: string, payload: Partial<IRide>, decodedTok
   if (!existRider) {
     throw new AppError(httpStatus.NOT_FOUND, "Rider not found");
   }
-
-  console.log(decodedToken.userId);
-  console.log(ride.riderId.toString());
 
   if (ride.riderId.toString() !== decodedToken.userId) {
     throw new AppError(
@@ -159,6 +155,7 @@ const riderHistory = async (decodedToken: JwtPayload) => {
       $project: {
         pickupLocation: 1,
         destinationLocation: 1,
+        feedback: 1,
         fare: 1,
         status: 1,
         history: 1,

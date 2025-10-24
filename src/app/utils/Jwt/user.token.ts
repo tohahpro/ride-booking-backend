@@ -36,7 +36,7 @@ export const createNewAccessTokenWithRefreshToken = async(refreshToken: string)=
     if(!isUserExist){
         throw new AppError(httpStatus.BAD_REQUEST, "Email does not exist")
     }
-    if(isUserExist.isActive === IsActive.BLOCKED || isUserExist.isActive === IsActive.INACTIVE){
+    if(isUserExist.isActive === IsActive.INACTIVE){
         throw new AppError(httpStatus.BAD_REQUEST, `user is ${isUserExist.isActive}`)
     }
 
