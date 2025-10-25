@@ -122,11 +122,11 @@ npm run dev
 
 | Method | Endpoint                          | Description                  | Role   |
 | ------ | --------------------------------- | ---------------------------- | ------ |
-| POST   | `/api/v1/ride/request-ride`              | Request a new ride           | Rider  |
-| GET    | `/api/v1/ride/history`                   | Get rider’s ride history     | Rider  |
-| PATCH  | `/api/v1/ride/:id/cancel-ride/:id`       | Cancel a ride                | Rider  |
-| GET    | `/api/v1/ride/available-ride`            | Get available rides          | Driver |
-| PATCH  | `/api/v1/ride/feedback/:id`              | Update ride status           | Rider |
+| POST   | `/ride/request-ride`              | Request a new ride           | Rider  |
+| GET    | `/ride/history`                   | Get rider’s ride history     | Rider  |
+| PATCH  | `/ride/:id/cancel-ride/:id`       | Cancel a ride                | Rider  |
+| GET    | `/ride/available-ride`            | Get available rides          | Driver |
+| PATCH  | `/ride/feedback/:id`              | Update ride status           | Rider |
 
 ---
 
