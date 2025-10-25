@@ -19,11 +19,11 @@ const moduleRoutes =[
         route: AuthRoutes
     },
     {
-        path: "/ride",
+        path: "/rides",
         route: RideRoutes
     },
     {
-        path: "/driver",
+        path: "/drivers",
         route: DriverRoutes
     },
     {
