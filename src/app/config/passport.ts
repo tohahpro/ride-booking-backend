@@ -17,7 +17,7 @@ passport.use(
                 return done(null, false, { message: "User Dose Not Exist" })
             }     
             
-            if (isUserExist.isActive === IsActive.BLOCKED || isUserExist.isActive === IsActive.INACTIVE) {
+            if (isUserExist.isActive === IsActive.INACTIVE) {
                 return done(`user is ${isUserExist.isActive}`)
             }
 

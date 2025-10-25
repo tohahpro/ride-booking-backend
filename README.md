@@ -99,9 +99,9 @@ npm run dev
 
 | Method | Endpoint                    | Description        | Role         |
 | ------ | --------------------------- | ------------------ | ------------ |
-| POST   | `/user/register`      | Register a new user | Public   |
-| GET    | `/user/me`                 | Get own profile    | Any          |
-| PATCH  | `/user/updateProfile`   | Update own profile | Any Role     |
+| POST   | `/api/v1/user/register`      | Register a new user | Public   |
+| GET    | `/api/v1/user/me`                 | Get own profile    | Any          |
+| PATCH  | `/api/v1/user/updateProfile`   | Update own profile | Any Role     |
 
 
 ---
@@ -110,11 +110,11 @@ npm run dev
 
 | Method | Endpoint                  | Description         | Role   |
 | ------ | ------------------------- | ------------------- | ------ |
-| POST   | `/driver/create-driver`   | Create a new driver | Public |
-| POST   | `/driver/accept-ride`   | Requested ride accept or reject | Driver |
-| GET    | `/driver/history` | Get driver earnings | Driver |
-| PATCH  | `/driver/status-update` | Set ride status | Driver|
-| PATCH  | `/driver/changeOnlineStatus` | Set online/offline | Driver|
+| POST   | `/api/v1/driver/create-driver`   | Create a new driver | Public |
+| POST   | `/api/v1/driver/accept-ride`   | Requested ride accept or reject | Driver |
+| GET    | `/api/v1/driver/history` | Get driver earnings | Driver |
+| PATCH  | `/api/v1/driver/status-update` | Set ride status | Driver|
+| PATCH  | `/api/v1/driver/changeOnlineStatus` | Set online/offline | Driver|
 
 ---
 
@@ -122,11 +122,11 @@ npm run dev
 
 | Method | Endpoint                          | Description                  | Role   |
 | ------ | --------------------------------- | ---------------------------- | ------ |
-| POST   | `/ride/request-ride`              | Request a new ride           | Rider  |
-| GET    | `/ride/history`                   | Get rider’s ride history     | Rider  |
-| PATCH  | `/ride/:id/cancel-ride/:id`       | Cancel a ride                | Rider  |
-| GET    | `/ride/available-ride`            | Get available rides          | Driver |
-| PATCH  | `/ride/feedback/:id`              | Update ride status           | Rider |
+| POST   | `/api/v1/ride/request-ride`              | Request a new ride           | Rider  |
+| GET    | `/api/v1/ride/history`                   | Get rider’s ride history     | Rider  |
+| PATCH  | `/api/v1/ride/:id/cancel-ride/:id`       | Cancel a ride                | Rider  |
+| GET    | `/api/v1/ride/available-ride`            | Get available rides          | Driver |
+| PATCH  | `/api/v1/ride/feedback/:id`              | Update ride status           | Rider |
 
 ---
 
@@ -134,11 +134,11 @@ npm run dev
 
 | Method | Endpoint                         | Description            | Role  |
 | ------ | -------------------------------- | ---------------------- | ----- |
-| GET    | `/admin/getAllUser`              | Get all users          | Admin |
-| GET    | `/admin/getAllRide`              | Get all rides          | Admin |
-| PATCH  | `/admin/changeIsApproveStatus/:id` | Approve/suspend driver | Admin |
-| PATCH  | `/admin/updateActiveStatus/:id` | Active/Inactive driver | Admin |
-| PATCH  | `/admin/changeBlockStatus/:id` | Blocked/Unblocked driver | Admin |
+| GET    | `/api/v1/admin/getAllUser`              | Get all users          | Admin |
+| GET    | `/api/v1/admin/getAllRide`              | Get all rides          | Admin |
+| PATCH  | `/api/v1/admin/changeIsApproveStatus/:id` | Approve/suspend driver | Admin |
+| PATCH  | `/api/v1/admin/updateActiveStatus/:id` | Active/Inactive driver | Admin |
+| PATCH  | `/api/v1/admin/changeBlockStatus/:id` | Blocked/Unblocked driver | Admin |
 
 ---
 
