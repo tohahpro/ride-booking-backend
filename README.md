@@ -110,11 +110,11 @@ npm run dev
 
 | Method | Endpoint                  | Description         | Role   |
 | ------ | ------------------------- | ------------------- | ------ |
-| POST   | `/api/v1/driver/create-driver`   | Create a new driver | Public |
-| POST   | `/api/v1/driver/accept-ride`   | Requested ride accept or reject | Driver |
-| GET    | `/api/v1/driver/history` | Get driver earnings | Driver |
-| PATCH  | `/api/v1/driver/status-update` | Set ride status | Driver|
-| PATCH  | `/api/v1/driver/changeOnlineStatus` | Set online/offline | Driver|
+| POST   | `/api/v1/drivers/create-driver`   | Create a new driver | Public |
+| POST   | `/api/v1/drivers/accept-ride`   | Requested ride accept or reject | Driver |
+| GET    | `/api/v1/drivers/history` | Get driver earnings | Driver |
+| PATCH  | `/api/v1/drivers/status-update` | Set ride status | Driver|
+| PATCH  | `/api/v1/drivers/changeOnlineStatus` | Set online/offline | Driver|
 
 ---
 
@@ -122,11 +122,11 @@ npm run dev
 
 | Method | Endpoint                          | Description                  | Role   |
 | ------ | --------------------------------- | ---------------------------- | ------ |
-| POST   | `/api/v1/ride/request-ride`              | Request a new ride           | Rider  |
-| GET    | `/api/v1/ride/history`                   | Get rider’s ride history     | Rider  |
-| PATCH  | `/api/v1/ride/:id/cancel-ride/:id`       | Cancel a ride                | Rider  |
-| GET    | `/api/v1/ride/available-ride`            | Get available rides          | Driver |
-| PATCH  | `/api/v1/ride/feedback/:id`              | Update ride status           | Rider |
+| POST   | `/api/v1/rides/request-ride`              | Request a new ride           | Rider  |
+| GET    | `/api/v1/rides/history`                   | Get rider’s ride history     | Rider  |
+| PATCH  | `/api/v1/rides/:id/cancel-ride/:id`       | Cancel a ride                | Rider  |
+| GET    | `/api/v1/rides/available-ride`            | Get available rides          | Driver |
+| PATCH  | `/api/v1/rides/feedback/:id`              | Update ride status           | Rider |
 
 ---
 
